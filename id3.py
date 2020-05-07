@@ -58,14 +58,14 @@ class DecisionTreeID3(object):
     def _entropy(self, ids):
         # calculate entropy of a node with index ids
         if len(ids) == 0: return 0
-        ids = [i+1 for i in ids] # panda series index starts from 1
+        ids = [i for i in ids] # panda series index starts from 0
         freq = np.array(self.target[ids].value_counts())
         return entropy(freq)
 
     def _set_label(self, node):
         # find label for a node if it is a leaf
         # simply chose by major voting 
-        target_ids = [i + 1 for i in node.ids]  # target is a series variable
+        target_ids = [i for i in node.ids]  # target is a series variable
         node.set_label(self.target[target_ids].mode()[0]) # most frequent label
     
     def _split(self, node):
@@ -81,7 +81,7 @@ class DecisionTreeID3(object):
             splits = []
             for val in values: 
                 sub_ids = sub_data.index[sub_data[att] == val].tolist()
-                splits.append([sub_id-1 for sub_id in sub_ids])
+                splits.append([sub_id for sub_id in sub_ids])
             # don't split if a node has too small number of points
             if min(map(len, splits)) < self.min_samples_split: continue
             # information gain
@@ -118,7 +118,7 @@ class DecisionTreeID3(object):
         return labels
 
 if __name__ == "__main__":
-    df = pd.DataFrame.from_csv('weather.csv')
+    df = pd.read_csv('weather.csv')
     X = df.iloc[:, :-1]
     y = df.iloc[:, -1]
     tree = DecisionTreeID3(max_depth = 3, min_samples_split = 2)
